@@ -39,6 +39,12 @@ class Boid():
 		self.colour = boid_colour
 		self.radius = boid_radius
 
+		# Setting screen wrap parameters
+		self.x_min = x_min
+		self.x_max = x_max
+		self.y_min = y_min
+		self.y_max = y_max
+
 	def update_position(self):
 		speed = math.sqrt(self.dvx ** 2 + self.dvy ** 2)
 		if speed < self.speed_min:
@@ -51,14 +57,14 @@ class Boid():
 		self.vy = self.dvy
 		self.x += self.vx
 		self.y += self.vy
-		if self.x > 1200:
-			self.x = 0
-		elif self.x < 0:
-			self.x = 1200
-		if self.y > 1200:
-			self.y = 0
-		elif self.y < 0:
-			self.y = 1200
+		if self.x > self.x_max:
+			self.x = self.x_min
+		elif self.x < self.x_min:
+			self.x = self.x_max
+		if self.y > self.y_max:
+			self.y = self.y_min
+		elif self.y < self.y_min:
+			self.y = self.y_max
 
 	def draw(self, surface):
 		pygame.draw.circle(surface, self.colour, (int(self.x), int(self.y)), self.radius, 0)
@@ -87,9 +93,8 @@ def update_velocity(boids):
 					xpos_avg += inner_boid.x
 					ypos_avg += inner_boid.y
 					cohesion_neighbours += 1
-		if close_dx != 0 or close_dy != 0:
-			outer_boid.dvx += close_dx * outer_boid.separation_factor
-			outer_boid.dvx += close_dy * outer_boid.separation_factor
+		outer_boid.dvx += close_dx * outer_boid.separation_factor
+		outer_boid.dvx += close_dy * outer_boid.separation_factor
 		if alignment_neighbours > 0:
 			xvel_avg = xvel_avg / alignment_neighbours
 			yvel_avg = yvel_avg / alignment_neighbours
@@ -102,7 +107,7 @@ def update_velocity(boids):
 			outer_boid.dvy += (ypos_avg - outer_boid.y) * outer_boid.cohesion_factor
 
 def main():
-	fps = 60
+	fps = 600
 	run = True
 	boid_colour = (255, 0, 0)
 	boid_radius = 5
@@ -110,10 +115,10 @@ def main():
 
 	num_boids = 200
 
-	separation_radius = 10
-	alignment_radius = 75
-	cohesion_radius = 100
-	separation_factor = 0.05
+	separation_radius = 25
+	alignment_radius = 50
+	cohesion_radius = 50
+	separation_factor = 0.005
 	alignment_factor = 0.05
 	cohesion_factor = 0.0005
 
