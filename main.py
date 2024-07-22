@@ -107,7 +107,7 @@ def update_velocity(boids):
 			outer_boid.dvy += (ypos_avg - outer_boid.y) * outer_boid.cohesion_factor
 
 def main():
-	fps = 600
+	fps = 60
 	run = True
 	boid_colour = (255, 0, 0)
 	boid_radius = 5
@@ -124,7 +124,7 @@ def main():
 
 	x_min = 0
 	y_min = 0
-	x_max = 1200
+	x_max = 1800
 	y_max = 1200
 	speed_max = 6
 	speed_min = 3
