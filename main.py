@@ -6,10 +6,10 @@ import math
 
 class Boid():
 	def __init__(self,
-				 x_min, y_min, x_max, y_max,
+				 x_min, y_min, x_max, y_max, margin,
 				 speed_min, speed_max,
 				 separation_radius, alignment_radius, cohesion_radius,
-				 separation_factor, alignment_factor, cohesion_factor,
+				 separation_factor, alignment_factor, cohesion_factor, turn_factor,
 				 boid_colour, boid_radius):
 		# Generating position
 		self.x = random.uniform(x_min, x_max)
@@ -30,6 +30,7 @@ class Boid():
 		self.separation_factor = separation_factor
 		self.alignment_factor = alignment_factor
 		self.cohesion_factor = cohesion_factor
+		self.turn_factor = turn_factor
 
 		# Setting speed limits
 		self.speed_min = speed_min
@@ -44,8 +45,17 @@ class Boid():
 		self.x_max = x_max
 		self.y_min = y_min
 		self.y_max = y_max
+		self.margin = margin
 
 	def update_position(self):
+		if self.x < self.margin:
+			self.dvx += self.turn_factor
+		if self.x > self.x_max - self.x_min - self.margin:
+			self.dvx -= self.turn_factor
+		if self.y < self.margin:
+			self.dvy += self.turn_factor
+		if self.y > self.y_max - self.y_min - self.margin:
+			self.dvy -= self.turn_factor
 		speed = math.sqrt(self.dvx ** 2 + self.dvy ** 2)
 		if speed < self.speed_min:
 			self.dvx = self.speed_min * self.dvx / speed
@@ -57,14 +67,16 @@ class Boid():
 		self.vy = self.dvy
 		self.x += self.vx
 		self.y += self.vy
-		if self.x > self.x_max:
-			self.x = self.x_min
-		elif self.x < self.x_min:
-			self.x = self.x_max
-		if self.y > self.y_max:
-			self.y = self.y_min
-		elif self.y < self.y_min:
-			self.y = self.y_max
+
+
+		# if self.x > self.x_max:
+		# 	self.x = self.x_min
+		# elif self.x < self.x_min:
+		# 	self.x = self.x_max
+		# if self.y > self.y_max:
+		# 	self.y = self.y_min
+		# elif self.y < self.y_min:
+		# 	self.y = self.y_max
 
 	def draw(self, surface):
 		pygame.draw.circle(surface, self.colour, (int(self.x), int(self.y)), self.radius, 0)
@@ -94,7 +106,7 @@ def update_velocity(boids):
 					ypos_avg += inner_boid.y
 					cohesion_neighbours += 1
 		outer_boid.dvx += close_dx * outer_boid.separation_factor
-		outer_boid.dvx += close_dy * outer_boid.separation_factor
+		outer_boid.dvy += close_dy * outer_boid.separation_factor
 		if alignment_neighbours > 0:
 			xvel_avg = xvel_avg / alignment_neighbours
 			yvel_avg = yvel_avg / alignment_neighbours
@@ -115,27 +127,31 @@ def main():
 
 	num_boids = 200
 
-	separation_radius = 25
-	alignment_radius = 50
-	cohesion_radius = 50
-	separation_factor = 0.005
-	alignment_factor = 0.05
-	cohesion_factor = 0.0005
+	separation_radius = 20
+	alignment_radius = 150
+	cohesion_radius = 100
+	separation_factor = 0.05
+	alignment_factor = 0.005
+	cohesion_factor = 0.005
 
 	x_min = 0
 	y_min = 0
 	x_max = 1800
 	y_max = 1200
-	speed_max = 6
+
+	margin = 200
+
+	speed_max = 9
 	speed_min = 3
+	turn_factor = 0.1
 
 	boids = []
 
 	for _ in range(num_boids):
-		boids.append(Boid(x_min, y_min, x_max, y_max,
+		boids.append(Boid(x_min, y_min, x_max, y_max, margin,
 						  speed_min, speed_max,
 						  separation_radius, alignment_radius, cohesion_radius,
-						  separation_factor, alignment_factor, cohesion_factor,
+						  separation_factor, alignment_factor, cohesion_factor, turn_factor,
 						  boid_colour, boid_radius))
 
 	pygame.init()
