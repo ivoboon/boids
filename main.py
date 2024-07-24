@@ -125,7 +125,7 @@ def main():
 	boid_radius = 5
 	background_colour = (0, 0, 0)
 
-	num_boids = 200
+	num_boids = 250
 
 	separation_radius = 20
 	alignment_radius = 150
@@ -141,7 +141,7 @@ def main():
 
 	margin = 200
 
-	speed_max = 9
+	speed_max = 15
 	speed_min = 3
 	turn_factor = 0.1
 
