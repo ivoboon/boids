@@ -10,7 +10,6 @@ class Boid():
 				 speed_min, speed_max,
 				 separation_radius, alignment_radius, cohesion_radius,
 				 separation_factor, alignment_factor, cohesion_factor, turn_factor,
-				 fov_angle,
 				 boid_colour, boid_radius):
 		# Generating position
 		self.x = random.uniform(x_min, x_max)
@@ -32,7 +31,6 @@ class Boid():
 		self.alignment_factor = alignment_factor
 		self.cohesion_factor = cohesion_factor
 		self.turn_factor = turn_factor
-		self.fov_angle = fov_angle
 
 		# Setting speed limits
 		self.speed_min = speed_min
@@ -73,17 +71,6 @@ class Boid():
 	def draw(self, surface):
 		pygame.draw.circle(surface, self.colour, (int(self.x), int(self.y)), self.radius, 0)
 
-def check_fov(outer_boid, inner_boid):
-	alpha = 2 * math.pi - outer_boid.fov_angle
-	v_alpha = math.atan2(outer_boid.vy, outer_boid.vx)
-	lower_bound = v_alpha + math.pi - alpha / 2
-	offset = 2 * math.pi - lower_bound
-	beta = math.atan2(inner_boid.y - outer_boid.y, inner_boid.x - outer_boid.x) + offset
-	if beta >= alpha:
-		return True
-	else:
-		return False
-
 def update_velocity(boids):
 	for outer_boid in boids:
 		close_dx = 0
@@ -97,14 +84,14 @@ def update_velocity(boids):
 		for inner_boid in boids:
 			if inner_boid != outer_boid:
 				dist = math.sqrt((outer_boid.x - inner_boid.x) ** 2 + (outer_boid.y - inner_boid.y) ** 2)
-				if dist <= outer_boid.separation_radius and check_fov(outer_boid, inner_boid):
+				if dist <= outer_boid.separation_radius:
 					close_dx += outer_boid.x - inner_boid.x
 					close_dy += outer_boid.y - inner_boid.y
-				if dist <= outer_boid.alignment_radius and check_fov(outer_boid, inner_boid):
+				if dist <= outer_boid.alignment_radius:
 					xvel_avg += inner_boid.vx
 					yvel_avg += inner_boid.vy
 					alignment_neighbours += 1
-				if dist <= outer_boid.cohesion_radius and check_fov(outer_boid, inner_boid):
+				if dist <= outer_boid.cohesion_radius:
 					xpos_avg += inner_boid.x
 					ypos_avg += inner_boid.y
 					cohesion_neighbours += 1
@@ -135,7 +122,7 @@ def main():
 	cohesion_radius = 100
 	separation_factor = 0.05
 	alignment_factor = 0.005
-	cohesion_factor = 0.01
+	cohesion_factor = 0.005
 
 	x_min = 0
 	y_min = 0
@@ -144,10 +131,9 @@ def main():
 
 	margin = 200
 
-	speed_max = 6
-	speed_min = 1
-	turn_factor = 0.25
-	fov_angle = 0.5 * math.pi
+	speed_max = 15
+	speed_min = 3
+	turn_factor = 0.1
 
 	boids = []
 
@@ -156,7 +142,6 @@ def main():
 						  speed_min, speed_max,
 						  separation_radius, alignment_radius, cohesion_radius,
 						  separation_factor, alignment_factor, cohesion_factor, turn_factor,
-						  fov_angle,
 						  boid_colour, boid_radius))
 
 	pygame.init()
